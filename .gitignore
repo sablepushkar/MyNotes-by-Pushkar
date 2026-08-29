@@ -1,0 +1,5 @@
+node_modules/
+myprep.sqlite
+myprep.sqlite-shm
+myprep.sqlite-wal
+.env
