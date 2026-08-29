@@ -82,6 +82,29 @@ body.dark-mode{--bg:#000;--card:#111;--text:#f3f4f6;--muted:#9ca3af;--line:#292d
 .about-panel{position:absolute;left:0;top:0;height:100%;width:min(380px,88vw);background:var(--card);border-right:1px solid var(--line);box-shadow:18px 0 55px rgba(0,0,0,.18);padding:26px 24px;overflow:auto;color:var(--text)}
 .about-panel h2{margin:0 0 8px;font-size:24px;letter-spacing:-.5px}.about-panel .about-sub{color:var(--muted);font-size:12px;margin-bottom:20px}.about-panel section{padding:14px 0;border-top:1px solid var(--line)}.about-panel h3{margin:0 0 7px;font-size:13px}.about-panel p{margin:0;color:var(--muted);font-size:12px;line-height:1.6}.about-close{position:absolute;top:16px;right:16px;border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:10px;width:34px;height:34px;cursor:pointer}
 @media(max-width:700px){.study-card{min-width:0;min-height:112px!important}.study-card-resize-tip{display:none}.about-panel{width:min(360px,92vw)}}
+
+/* Dark mode: exam cards stay black with neon exam outlines and white text */
+body.dark-mode .study-card.exam-neet,
+body.dark-mode .study-card.exam-jee-main {
+  background:#000 !important;
+  color:#fff !important;
+  border:1px solid transparent !important;
+}
+body.dark-mode .study-card.exam-neet {
+  border-color:#39ff88 !important;
+  box-shadow:0 0 5px rgba(57,255,136,.55), inset 0 0 8px rgba(57,255,136,.06) !important;
+}
+body.dark-mode .study-card.exam-jee-main {
+  border-color:#ffe45c !important;
+  box-shadow:0 0 5px rgba(255,228,92,.55), inset 0 0 8px rgba(255,228,92,.06) !important;
+}
+body.dark-mode .study-card .study-card-title,
+body.dark-mode .study-card .study-card-meta,
+body.dark-mode .study-card .study-card-access,
+body.dark-mode .study-card .study-card-resize-tip { color:#fff !important; }
+body.dark-mode .study-card.exam-neet .study-card-access { color:#fff !important; }
+body.dark-mode .study-card.exam-jee-main .study-card-access { color:#fff !important; }
+
 </style></head><body>
 <div id="accountGate" class="account-gate">
 <div class="account-card">
