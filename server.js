@@ -17,7 +17,22 @@ app.set("trust proxy",1);
 app.use((req,res,next)=>{const origin=req.headers.origin;if(origin&&ALLOWED_ORIGINS.has(origin)){res.setHeader("Access-Control-Allow-Origin",origin);res.setHeader("Vary","Origin");res.setHeader("Access-Control-Allow-Credentials","true");res.setHeader("Access-Control-Allow-Headers","Content-Type");res.setHeader("Access-Control-Allow-Methods","GET,POST,PUT,OPTIONS")}if(req.method==="OPTIONS")return res.sendStatus(204);next()});
 app.use(express.json({limit:"32kb"}));
 app.use(cookieParser());
-const pool=new Pool({connectionString:process.env.DATABASE_URL,ssl:{rejectUnauthorized:false},max:5});
+function databaseUrl(){
+  const raw=process.env.DATABASE_URL;
+  if(!raw) throw new Error("DATABASE_URL is not configured");
+  const u=new URL(raw);
+  // Render cannot reach Supabase direct IPv6 endpoints. If DATABASE_URL was
+  // accidentally set to the direct db.* endpoint, transparently switch this
+  // persistent backend to this project's IPv4 Supavisor session pooler.
+  if(u.hostname==="db.vokqobbqpjuwmyawbrdd.supabase.co") {
+    u.hostname="aws-0-ap-southeast-1.pooler.supabase.com";
+    u.port="5432";
+    u.username="postgres.vokqobbqpjuwmyawbrdd";
+  }
+  u.searchParams.set("sslmode","require");
+  return u.toString();
+}
+const pool=new Pool({connectionString:databaseUrl(),ssl:{rejectUnauthorized:false},max:5,connectionTimeoutMillis:10000,keepAlive:true});
 const usernameRe=/^[A-Za-z0-9]{1,16}$/;
 const pinRe=/^\d{4}$/;
 const hashToken=t=>crypto.createHash("sha256").update(t).digest("hex");
