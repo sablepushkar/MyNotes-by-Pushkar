@@ -131,6 +131,31 @@ body.dark-mode .study-card.exam-mpsc .study-card-title,body.dark-mode .study-car
 body.dark-mode .study-card.exam-upsc .study-card-title,body.dark-mode .study-card.exam-upsc .study-card-meta,body.dark-mode .study-card.exam-upsc .study-card-access,body.dark-mode .study-card.exam-upsc .study-card-resize-tip,
 body.dark-mode .study-card.exam-hsc .study-card-title,body.dark-mode .study-card.exam-hsc .study-card-meta,body.dark-mode .study-card.exam-hsc .study-card-access,body.dark-mode .study-card.exam-hsc .study-card-resize-tip,
 body.dark-mode .study-card.exam-cbse .study-card-title,body.dark-mode .study-card.exam-cbse .study-card-meta,body.dark-mode .study-card.exam-cbse .study-card-access,body.dark-mode .study-card.exam-cbse .study-card-resize-tip{color:#fff!important}
+
+/* MyPrep interaction refinement: widget-like snapping, motion and exam info */
+.study-cards{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;width:100%;max-width:980px;justify-items:stretch;align-items:stretch;padding:2px 0 18px}
+.study-card{grid-column:span 2;width:100%!important;min-width:0!important;max-width:none!important;min-height:126px!important;margin:0!important;border-radius:18px;transition:grid-column .22s ease,min-height .22s ease,transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .2s ease,border-color .2s ease,opacity .2s ease}
+.study-card.grid-half{grid-column:span 1}
+.study-card.grid-full{grid-column:span 2}
+.study-card.resizing{cursor:grabbing;transform:scale(.992);box-shadow:0 0 0 3px rgba(67,117,220,.18),0 18px 42px rgba(0,0,0,.14)!important}
+.study-card .resize-handle{width:22px;height:22px;right:9px;bottom:8px;border-right:3px solid rgba(80,95,115,.42);border-bottom:3px solid rgba(80,95,115,.42);opacity:.48;pointer-events:auto;cursor:nwse-resize;transition:opacity .18s ease,transform .18s ease}
+.study-card:hover .resize-handle,.study-card.resizing .resize-handle{opacity:1;transform:scale(1.05)}
+.study-card-resize-tip{font-size:10px;transition:opacity .18s ease}
+.study-card .study-card-actions{display:flex;align-items:center;gap:8px;margin-left:auto;flex-shrink:0}
+.study-card-access,.study-card-info{border-radius:10px;transition:transform .18s ease,background .18s ease,border-color .18s ease}
+.study-card-access{padding:9px 11px;border:1px solid currentColor;font-size:11px;white-space:nowrap}
+.study-card-info{width:32px;height:32px;padding:0;border:1px solid currentColor;background:transparent;color:inherit;font-weight:800;font-size:15px;cursor:pointer}
+.study-card-access:hover,.study-card-info:hover{transform:translateY(-1px)}
+.settings-logout{width:100%;margin-top:10px;border:1px solid #d94b4b;background:transparent;color:#d94b4b;border-radius:10px;padding:9px 10px;cursor:pointer;font-weight:700;transition:background .18s ease,color .18s ease,transform .18s ease}
+.settings-logout:hover{background:#d94b4b;color:#fff;transform:translateY(-1px)}
+.exam-info-card{position:relative;width:min(620px,92vw);max-height:82vh;overflow:auto;text-align:left;animation:examInfoIn .2s ease both}
+.exam-info-close{position:absolute;right:16px;top:16px;width:34px;height:34px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);cursor:pointer;font-size:20px;transition:transform .18s ease}
+.exam-info-close:hover{transform:rotate(4deg) scale(1.04)}
+.exam-info-accent{height:4px;width:74px;border-radius:99px;margin:0 0 14px;background:var(--exam-accent,#5274d9);box-shadow:0 0 14px color-mix(in srgb,var(--exam-accent,#5274d9) 45%,transparent)}
+.exam-info-body{display:grid;gap:12px;margin-top:16px}.exam-info-section{padding:12px 0;border-top:1px solid var(--line)}.exam-info-section b{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}.exam-info-section span{color:var(--muted);font-size:13px;line-height:1.55}
+@keyframes examInfoIn{from{opacity:0;transform:translateY(8px) scale(.985)}to{opacity:1;transform:none}}
+body,button,select,input,.study-modal,.settings-panel,.study-card,.menu,.study-type-menu{transition:background-color .22s ease,color .22s ease,border-color .22s ease,box-shadow .22s ease,opacity .22s ease}
+@media(max-width:700px){.study-cards{grid-template-columns:1fr;gap:11px}.study-card,.study-card.grid-half,.study-card.grid-full{grid-column:span 1}.study-card .study-card-actions{gap:6px}.study-card-access{padding:8px 9px}.exam-info-card{max-height:86vh}}
 </style>
 </head><body>
 <div id="accountGate" class="account-gate">
@@ -167,7 +192,7 @@ body.dark-mode .study-card.exam-cbse .study-card-title,body.dark-mode .study-car
     <div class="settings-title">Settings</div>
     <div class="settings-row"><span class="settings-label">Username</span><strong id="settingsUsername">—</strong></div>
     <div class="settings-row"><span class="settings-label">Current PIN</span><span class="settings-pin"><span id="settingsPinValue">(****)</span><button id="settingsPinView" class="settings-view" type="button">View</button></span></div>
-    <div class="settings-row settings-display"><span class="settings-label">Display mode</span><span class="display-options"><button id="lightModeButton" type="button">Light</button><button id="darkModeButton" type="button">Dark</button></span></div>
+    <div class="settings-row settings-display"><span class="settings-label">Display mode</span><span class="display-options"><button id="lightModeButton" type="button">Light</button><button id="darkModeButton" type="button">Dark</button></span></div><button id="logoutButton" class="settings-logout" type="button">Log out</button>
   </div>
   <div class="prep-home-card"><div id="studyCards" class="study-cards"></div></div>
   <div id="studyTypeMenu" class="study-type-menu" hidden>
@@ -186,6 +211,13 @@ body.dark-mode .study-card.exam-cbse .study-card-title,body.dark-mode .study-car
     <div class="study-modal-title">Delete Course</div><div class="study-modal-subtitle">Select the study material you want to remove from this account.</div>
     <div id="deleteCourseList" class="delete-course-list"></div>
     <div class="study-modal-actions"><button id="confirmDeleteCourses" class="danger" type="button">Delete selected</button><button id="cancelDeleteCourses" type="button">Cancel</button></div><p id="deleteMessage" class="account-message"></p>
+  </div></div>
+  <div id="examInfoModal" class="study-modal exam-info-modal" hidden><div class="study-modal-card exam-info-card">
+    <button id="examInfoClose" class="exam-info-close" type="button" aria-label="Close exam information">×</button>
+    <div id="examInfoAccent" class="exam-info-accent"></div>
+    <div id="examInfoTitle" class="study-modal-title"></div>
+    <div id="examInfoSubtitle" class="study-modal-subtitle"></div>
+    <div id="examInfoBody" class="exam-info-body"></div>
   </div></div>
   <div id="homePrepo" class="home-prepo" aria-live="polite">
     <div id="homePrepoBubble" class="home-prepo-bubble" role="status"></div>
@@ -299,19 +331,20 @@ const PREPO_HOME_LINES=["MyPrep helps you organise and analyse your Study, simpl
 function showHomePrepo(){const isNew=!studies.length&&!Object.keys(state).length;if(isNew){homePrepoBubble.innerHTML="<strong>Start your study workspace</strong><br>Tap the highlighted <b>＋ New Study</b> button to add your first Prep Chart.";newStudyBtn.classList.add("prepo-highlight")}else{let i=Math.floor(Math.random()*PREPO_HOME_LINES.length);if(PREPO_HOME_LINES.length>1&&i===homePrepoLast)i=(i+1)%PREPO_HOME_LINES.length;homePrepoLast=i;homePrepoBubble.textContent=PREPO_HOME_LINES[i]}homePrepoOpen=true;homePrepoButton.classList.add("reacting");homePrepoBubble.classList.add("show")}
 function dismissHomePrepo(){homePrepoOpen=false;homePrepoBubble.classList.remove("show");homePrepoButton.classList.remove("reacting");newStudyBtn.classList.remove("prepo-highlight");homePrepoMascot.src=homePrepoMascot.dataset.resting||homePrepoMascot.src}
 homePrepoMascot.dataset.resting=document.getElementById("prepoMascot")?.dataset.wave||document.getElementById("prepoMascot")?.src||"";homePrepoMascot.dataset.reaction=document.getElementById("prepoMascot")?.dataset.cover||"";homePrepoMascot.src=homePrepoMascot.dataset.resting;homePrepoButton.onclick=e=>{e.stopPropagation();showHomePrepo();if(homePrepoMascot.dataset.reaction)homePrepoMascot.src=homePrepoMascot.dataset.reaction};homePrepoBubble.onclick=e=>e.stopPropagation();document.addEventListener("click",event=>{if(homePrepoOpen&&!event.target.closest("#homePrepo"))dismissHomePrepo()});
+const MYPREP_REMEMBER_KEY="myprep_device_remember_until";const MYPREP_REMEMBER_MS=7*24*60*60*1000;function myprepMarkRemembered(){try{localStorage.setItem(MYPREP_REMEMBER_KEY,String(Date.now()+MYPREP_REMEMBER_MS))}catch(e){}}function myprepRememberValid(){try{return Number(localStorage.getItem(MYPREP_REMEMBER_KEY)||0)>Date.now()}catch(e){return false}}
 async function startAccountUI(){
 const gate=document.getElementById("accountGate"),app=document.getElementById("appContent"),choice=document.getElementById("accountChoice"),signup=document.getElementById("signupForm"),login=document.getElementById("loginForm"),returning=document.getElementById("returning");
 function openApp(){gate.hidden=true;app.hidden=false;prepHome.hidden=false;prepChartView.hidden=true;prepoWidget.hidden=true;homePrepo.style.display="flex";renderStudyCards();render();if(!studies.length&&!Object.keys(state).length)setTimeout(showHomePrepo,650)}
 function showChoice(){choice.hidden=false;signup.hidden=true;login.hidden=true;returning.hidden=true;setPrepo(false)}
-const session=await MyPrepAccount.restoreSession();
-if(session){currentUsername=session.username;currentPin="";state=MyPrepAccount.objectFromIds(session.progress);studies=Array.isArray(session.studies)?session.studies:[];ensureLegacyStudy();document.getElementById("returningText").textContent=`Welcome back, ${session.username}. Your saved progress is ready.`;choice.hidden=true;returning.hidden=false}else{gate.hidden=false;app.hidden=true}
+const session=myprepRememberValid()?await MyPrepAccount.restoreSession():null;
+if(session){currentUsername=session.username;currentPin="";state=MyPrepAccount.objectFromIds(session.progress);studies=Array.isArray(session.studies)?session.studies:[];ensureLegacyStudy();markRemembered();choice.hidden=true;returning.hidden=true;openApp()}else{gate.hidden=false;app.hidden=true;choice.hidden=false;signup.hidden=true;login.hidden=true;returning.hidden=true}
 createAccountBtn.onclick=()=>{choice.hidden=true;signup.hidden=false};loginAccountBtn.onclick=()=>{choice.hidden=true;login.hidden=false};backFromSignup.onclick=showChoice;backFromLogin.onclick=showChoice;continueBtn.onclick=openApp;differentBtn.onclick=showChoice;
 const prepoMascot=document.getElementById("prepoMascot");
 const setPrepo=(cover)=>{if(prepoMascot)prepoMascot.src=cover?prepoMascot.dataset.cover:prepoMascot.dataset.wave;};
 [signupPin,loginPin].forEach((input)=>{const eye=input.parentElement.querySelector('.pin-eye');eye.onclick=()=>{input.type=input.type==='password'?'text':'password';eye.textContent=input.type==='password'?'•':'◦'};input.type='password';input.addEventListener('focus',()=>setPrepo(true));input.addEventListener('blur',()=>setPrepo(false));input.addEventListener('input',()=>{input.value=input.value.replace(/\D/g,'').slice(0,4)});});
 [signupUsername,loginUsername].forEach((input)=>input.addEventListener('input',()=>{input.value=input.value.replace(/[^A-Za-z0-9]/g,'').slice(0,16)}));
-signup.onsubmit=async e=>{e.preventDefault();const m=document.getElementById("signupMessage");m.textContent="";if(!signupUsername.value.match(/^[A-Za-z0-9]{1,16}$/)){m.textContent="Use 1–16 letters or numbers for your username.";signupUsername.focus();return}if(!signupPin.value.match(/^\d{4}$/)){m.textContent="Enter a 4-digit PIN.";signupPin.focus();return}try{const r=await MyPrepAccount.signup(signupUsername.value,signupPin.value);currentUsername=r.username;currentPin=signupPin.value;state=MyPrepAccount.objectFromIds(r.progress||[]);studies=Array.isArray(r.studies)?r.studies:[];ensureLegacyStudy();localStorage.removeItem("myprep_state");openApp()}catch(err){m.textContent=err.message}};
-login.onsubmit=async e=>{e.preventDefault();const m=document.getElementById("loginMessage");m.textContent="";if(!loginUsername.value.match(/^[A-Za-z0-9]{1,16}$/)){m.textContent="Enter your username (letters and numbers only).";loginUsername.focus();return}if(!loginPin.value.match(/^\d{4}$/)){m.textContent="Enter your 4-digit PIN.";loginPin.focus();return}try{const r=await MyPrepAccount.login(loginUsername.value,loginPin.value);currentUsername=r.username;currentPin=loginPin.value;state=MyPrepAccount.objectFromIds(r.progress||[]);studies=Array.isArray(r.studies)?r.studies:[];ensureLegacyStudy();openApp()}catch(err){m.textContent=err.message}};
+signup.onsubmit=async e=>{e.preventDefault();const m=document.getElementById("signupMessage");m.textContent="";if(!signupUsername.value.match(/^[A-Za-z0-9]{1,16}$/)){m.textContent="Use 1–16 letters or numbers for your username.";signupUsername.focus();return}if(!signupPin.value.match(/^\d{4}$/)){m.textContent="Enter a 4-digit PIN.";signupPin.focus();return}try{const r=await MyPrepAccount.signup(signupUsername.value,signupPin.value);currentUsername=r.username;currentPin=signupPin.value;state=MyPrepAccount.objectFromIds(r.progress||[]);studies=Array.isArray(r.studies)?r.studies:[];ensureLegacyStudy();localStorage.removeItem("myprep_state");myprepMarkRemembered();openApp()}catch(err){m.textContent=err.message}};
+login.onsubmit=async e=>{e.preventDefault();const m=document.getElementById("loginMessage");m.textContent="";if(!loginUsername.value.match(/^[A-Za-z0-9]{1,16}$/)){m.textContent="Enter your username (letters and numbers only).";loginUsername.focus();return}if(!loginPin.value.match(/^\d{4}$/)){m.textContent="Enter your 4-digit PIN.";loginPin.focus();return}try{const r=await MyPrepAccount.login(loginUsername.value,loginPin.value);currentUsername=r.username;currentPin=loginPin.value;state=MyPrepAccount.objectFromIds(r.progress||[]);studies=Array.isArray(r.studies)?r.studies:[];ensureLegacyStudy();myprepMarkRemembered();openApp()}catch(err){m.textContent=err.message}};
 }
 startAccountUI();
 </script></div>
@@ -362,15 +395,19 @@ function renderStudyCards(){
   if(!visible.length&&Object.keys(state).length) visible=[{id:'legacy-neet',type:'prep',exam:'NEET',title:'PREP CHART: NEET',dataKey:'neet',progress:MyPrepAccount.idsFromObject(state),legacy:true}];
   if(!visible.length){studyCards.innerHTML='<div class="study-empty">No study chart yet. Tap ＋ New Study to create one.</div>';return;}
   visible.forEach(st=>{
-    const b=document.createElement('button');b.type='button';b.className='prep-chart-button study-card '+(EXAM_CLASS[st.exam]||'');
-    const ui=st.ui||{};if(ui.width)b.style.width=ui.width+'px';if(ui.height)b.style.height=ui.height+'px';
+    const card=document.createElement('div');card.className='prep-chart-button study-card '+(EXAM_CLASS[st.exam]||'');card.tabIndex=0;card.setAttribute('role','button');
+    const ui=st.ui||{};const span=ui.span===1?1:2;card.classList.add(span===1?'grid-half':'grid-full');
+    if(ui.height)card.style.minHeight=ui.height+'px';
     const count=studyData(st).length;
-    b.innerHTML=`<span class="prep-chart-label"><span class="study-card-title">${st.title}</span><span class="study-card-meta">${st.exam} • ${count} chapters • exam-specific preparation tracker</span></span><span class="study-card-access">Click to access</span><span class="study-card-resize-tip">Drag to resize</span><span class="resize-handle" aria-hidden="true"></span>`;
-    bindStudyResize(b,st);
-    b.onclick=()=>{if(!b.dataset.justResized)openStudy(st);b.dataset.justResized=''};
-    studyCards.appendChild(b);
+    card.innerHTML=`<span class="prep-chart-label"><span class="study-card-title">${st.title}</span><span class="study-card-meta">${st.exam} • ${count} chapters • exam-specific preparation tracker</span></span><span class="study-card-actions"><span class="study-card-access">Access</span><button class="study-card-info" type="button" aria-label="Info about ${st.exam}">i</button></span><span class="study-card-resize-tip">Long-press then drag to resize</span><span class="resize-handle" aria-label="Resize"></span>`;
+    bindStudyResize(card,st);
+    const info=card.querySelector('.study-card-info');info.onclick=e=>{e.stopPropagation();openExamInfo(st)};
+    card.onclick=()=>{if(card.dataset.justResized){card.dataset.justResized='';return}openStudy(st)};
+    card.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openStudy(st)}};
+    studyCards.appendChild(card);
   });
 }
+function bindStudyResize(card,st){let timer=0,active=false,startX=0,startY=0,startW=0,startH=0;const clear=()=>{if(timer){clearTimeout(timer);timer=0}};const begin=e=>{if(e.pointerType==='mouse'&&e.button!==0)return;startX=e.clientX;startY=e.clientY;startW=card.getBoundingClientRect().width;startH=card.getBoundingClientRect().height;clear();timer=setTimeout(()=>{active=true;card.classList.add('resizing');card.setPointerCapture?.(e.pointerId)},380)};const move=e=>{if(!active){if(Math.hypot(e.clientX-startX,e.clientY-startY)>10)clear();return}e.preventDefault();const dx=e.clientX-startX,dy=e.clientY-startY;const full=studyCards.getBoundingClientRect().width;const half=Math.max(280,(full-14)/2);const span=dx<-(full*.18)?1:dx>(full*.18)?2:(st.ui?.span||2);const h=Math.max(112,Math.min(210,startH+dy));st.ui={...(st.ui||{}),span,height:Math.round(h)};card.classList.toggle('grid-half',span===1);card.classList.toggle('grid-full',span===2);card.style.minHeight=Math.round(h)+'px'};const end=async e=>{clear();if(!active)return;active=false;card.classList.remove('resizing');card.dataset.justResized='1';try{await MyPrepAccount.saveStudies(studies)}catch(err){}try{card.releasePointerCapture?.(e.pointerId)}catch(err){}};card.addEventListener('pointerdown',begin);card.addEventListener('pointermove',move);card.addEventListener('pointerup',end);card.addEventListener('pointercancel',end);card.addEventListener('contextmenu',e=>{if(active)e.preventDefault()})}
 function openStudy(st){
   activeStudy=st;state=MyPrepAccount.objectFromIds(st.progress||[]);const data=studyData(st);subject=data[0]?.subject||'';
   prepHome.hidden=true;prepChartView.hidden=false;homePrepo.style.display='none';prepoWidget.hidden=false;
@@ -389,5 +426,23 @@ createStudyConfirm.onclick=async()=>{
 /* Reset standard selector whenever a new exam is opened. */
 const _oldSetSubject=setSubject;
 setSubject=function(s){_oldSetSubject(s);};
+
+const examInfoModal=document.getElementById('examInfoModal'),examInfoClose=document.getElementById('examInfoClose'),examInfoAccent=document.getElementById('examInfoAccent'),examInfoTitle=document.getElementById('examInfoTitle'),examInfoSubtitle=document.getElementById('examInfoSubtitle'),examInfoBody=document.getElementById('examInfoBody'),logoutButton=document.getElementById('logoutButton');
+const EXAM_INFO={
+  'NEET':{accent:'#39ff88',title:'NEET-UG',subtitle:'National Eligibility cum Entrance Test — Undergraduate',date:'2027 date: to be announced officially. Usual planning window: early May.',format:'National computer-based test; Physics, Chemistry and Biology. 180 questions are displayed, with 180 to be attempted from the prescribed pattern.',language:'English, Hindi and other scheduled-language options as notified by NTA.'},
+  'JEE Main':{accent:'#ffe45c',title:'JEE Main',subtitle:'Joint Entrance Examination (Main)',date:'2027 dates: to be announced officially. Usually conducted in multiple sessions.',format:'Computer-based objective test. Paper 1 covers Mathematics, Physics and Chemistry.',language:'English, Hindi and other notified regional-language options.'},
+  'JEE Advanced':{accent:'#ffe45c',title:'JEE Advanced',subtitle:'Joint Entrance Examination (Advanced)',date:'2026 official date: 17 May 2026. 2027 date: to be announced.',format:'Computer-based examination with two compulsory papers; Paper 1 and Paper 2 are each 3 hours.',language:'English and Hindi; other languages may be provided for registration/support materials as notified.'},
+  'MHT-CET':{accent:'#ff6b00',title:'MHT-CET',subtitle:'Maharashtra Common Entrance Test',date:'2026 official schedule used for planning: multiple attempts in the 2026 cycle. 2027 dates: to be announced.',format:'Computer-based MCQ examination. PCB candidates take Physics, Chemistry and Biology; total test duration is 180 minutes.',language:'English, Marathi or Urdu for PCB/PCM question papers, subject to the candidate’s selected medium.'},
+  'BITSAT':{accent:'#eaff00',title:'BITSAT',subtitle:'Birla Institute of Technology and Science Admission Test',date:'2026 official dates: Session 1 — 15–16 April; Session 2 — 24–26 May. 2027 dates: to be announced.',format:'Computer-based MCQ test; 130 questions, 3 marks for correct and −1 for incorrect. PCB/B.Pharm candidates take Biology instead of Mathematics.',language:'English only.'},
+  'CUET-UG':{accent:'#173a8f',title:'CUET (UG)',subtitle:'Common University Entrance Test — Undergraduate',date:'2026 examination cycle ran in May–June with rescheduled sessions; 2027 dates: to be announced.',format:'Computer-based university entrance examination. Candidates select language, domain subjects and/or General Aptitude Test according to university/course requirements.',language:'Language papers include English, Hindi and listed Indian languages including Marathi; the available medium depends on the selected paper.'},
+  'IAT':{accent:'#8b8f98',title:'IISER Aptitude Test (IAT)',subtitle:'IISER undergraduate science admissions',date:'2026 official test date was announced separately by IISER Admissions; 2027 date: to be announced.',format:'Computer-based test: 60 MCQs, 15 each from Biology, Chemistry, Mathematics and Physics; 180 minutes; +4/−1.',language:'English and Hindi.'},
+  'MPSC':{accent:'#e24b2f',title:'MPSC State Services',subtitle:'Maharashtra Civil Services — State Services',date:'2027 dates: follow the official MPSC annual/exam notification; exact dates are not yet fixed here.',format:'State Services competitive examination with Preliminary and Main stages, followed by the applicable personality/interview stage. The 2027 Mains structure should follow the latest MPSC notification.',language:'Marathi and English are used according to the paper; qualifying language papers and paper-specific language rules apply.'},
+  'UPSC':{accent:'#d4a017',title:'UPSC Civil Services Examination',subtitle:'Union Public Service Commission — CSE',date:'2026 official Prelims date: 24 May 2026. 2027 dates: to be announced in the annual calendar/notification.',format:'Prelims followed by Mains written examination and Personality Test. Prelims has General Studies Paper I and CSAT/GS Paper II.',language:'Mains papers use English or an Indian language as permitted by the UPSC rules; language papers have their own requirements.'},
+  'HSC 12th':{accent:'#38bdf8',title:'Maharashtra HSC — Std. XII',subtitle:'Maharashtra State Board Higher Secondary Certificate',date:'2027 timetable: not yet officially published; normal annual theory-exam window is February–March.',format:'Board examination with subject-specific written papers plus practical/internal components where applicable.',language:'Depends on the subject and medium selected by the junior college/Board; Marathi and English are common science-stream media.'},
+  'CBSE 12th':{accent:'#2457d6',title:'CBSE Class XII',subtitle:'Central Board of Secondary Education — Senior Secondary',date:'2027 date sheet: not yet officially published; annual Class XII board examinations normally begin in February.',format:'Subject-wise board examinations with theory and practical/internal-assessment components where prescribed.',language:'Subject/paper medium follows the CBSE curriculum and school registration; English/Hindi are the principal media for many subjects.'}
+};
+function openExamInfo(st){const info=EXAM_INFO[st.exam];if(!info)return;examInfoAccent.style.setProperty('--exam-accent',info.accent);examInfoAccent.style.background=info.accent;examInfoTitle.textContent=info.title;examInfoSubtitle.textContent=info.subtitle;examInfoBody.innerHTML=`<div class="exam-info-section"><b>Exam date</b><span>${info.date}</span></div><div class="exam-info-section"><b>Format</b><span>${info.format}</span></div><div class="exam-info-section"><b>Language</b><span>${info.language}</span></div><div class="exam-info-section"><b>MyPrep syllabus</b><span>${studyData(st).length} syllabus entries are loaded for this course. Chapter/topic difficulty and weightage are MyPrep planning guidance unless the exam authority publishes an official chapter-wise allocation.</span></div>`;examInfoModal.hidden=false}
+function closeExamInfo(){examInfoModal.hidden=true}examInfoClose.onclick=closeExamInfo;examInfoModal.addEventListener('click',e=>{if(e.target===examInfoModal)closeExamInfo()});
+logoutButton.onclick=async()=>{try{await MyPrepAccount.logout()}catch(e){}try{localStorage.removeItem(MYPREP_REMEMBER_KEY);localStorage.removeItem('myprep_state')}catch(e){}currentUsername='';currentPin='';state={};studies=[];activeStudy=null;prepChartView.hidden=true;prepHome.hidden=true;settingsPanel.hidden=true;returning.hidden=true;signup.hidden=true;login.hidden=true;choice.hidden=false;gate.hidden=false;app.hidden=true};
 </script>
 </body></html>
