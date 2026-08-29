@@ -18,9 +18,16 @@ th,td{padding:12px 10px;border-bottom:1px solid var(--line);text-align:left}th{f
 .check.on{background:#fff}.check.all{background:var(--done)}.check:focus{outline:3px solid #bbb}
 .detail{display:none;background:#f8f9fa}.detail.show{display:table-row}.detail td{padding:12px 14px}.detailbox{font-size:13px;color:#444}.detailbox b{color:#111}.closehint{color:#888}
 @media(max-width:700px){th:nth-child(1),td:nth-child(1){min-width:190px}th,td{padding:10px 7px;font-size:12px}.check{width:23px;height:23px}}
-
-.account-gate{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px}.account-card{width:min(420px,100%);background:#fff;border-radius:18px;padding:26px;box-shadow:0 20px 60px rgba(0,0,0,.25)}.account-card h2{margin-top:0}.account-card button{margin:6px 4px 0 0}.account-form input{display:block;width:100%;box-sizing:border-box;padding:12px;margin:10px 0;border:1px solid #bbb;border-radius:10px;font-size:15px}.account-message{min-height:20px;margin-bottom:0}.account-card .primary{background:#111;color:#fff;border:0}.account-gate[hidden],.account-form[hidden],#returning[hidden]{display:none!important}
-</style></head><body>
+.account-gate{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px}.account-card{width:min(420px,100%);background:#fff;border-radius:18px;padding:26px;box-shadow:0 20px 60px rgba(0,0,0,.25)}.account-card h2{margin-top:0}.account-card button{margin:6px 4px 0 0}.account-form input{display:block;width:100%;box-sizing:border-box;padding:12px;margin:10px 0;border:1px solid #bbb;border-radius:10px;font-size:15px}.account-message{min-height:20px;margin-bottom:0}.account-card .primary{background:#111;color:#fff;border:0}.account-gate[hidden],.account-form[hidden],#returning[hidden]{display:none!important}</style></head><body>
+<div id="accountGate" class="account-gate">
+<div class="account-card">
+<h2>MyPrep</h2><p>Save progress on a user account.</p>
+<div id="accountChoice"><button id="createAccountBtn" class="primary">Create account</button><button id="loginAccountBtn">Log in</button></div>
+<form id="signupForm" class="account-form" hidden><input id="signupUsername" maxlength="16" pattern="[A-Za-z0-9]{1,16}" placeholder="Username (max 16 letters/numbers)" autocomplete="username" required><input id="signupPin" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" placeholder="4-digit PIN" autocomplete="new-password" required><button class="primary" type="submit">Create account</button><button type="button" id="backFromSignup">Back</button><p id="signupMessage" class="account-message"></p></form>
+<form id="loginForm" class="account-form" hidden><input id="loginUsername" maxlength="16" pattern="[A-Za-z0-9]{1,16}" placeholder="Username" autocomplete="username" required><input id="loginPin" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" placeholder="4-digit PIN" autocomplete="current-password" required><button class="primary" type="submit">Log in</button><button type="button" id="backFromLogin">Back</button><p id="loginMessage" class="account-message"></p></form>
+<div id="returning" hidden><p id="returningText"></p><button id="continueBtn" class="primary">Continue</button><button id="differentBtn">Use another account</button></div>
+</div></div>
+<div id="appContent" hidden>
 <header>
 <div id="subjectMenu"><button id="subjectBtn">☰ Subjects</button><div class="menu" id="menu"></div></div>
 <h1>MyPrep✓ ®</h1><span class="pill">NEET 2027 • Science Syllabus</span>
@@ -68,29 +75,22 @@ function render(){
  });
  let total=a.length*3,done=a.reduce((n,c)=>n+[0,1,2].filter(i=>state[key(c,i)]).length,0);document.getElementById("stats").textContent=`${done}/${total} tasks complete • ${a.length} chapters`;
 }
-async function toggle(id,i){let c=DATA.find(x=>x.subject+"|"+x.std+"|"+x.name===id);state[key(c,i)]=!state[key(c,i)];render(); if(currentUsername) await MyPrepAccount.saveState(state)}
+async function toggle(id,i){let c=DATA.find(x=>x.subject+"|"+x.std+"|"+x.name===id);state[key(c,i)]=!state[key(c,i)];render();if(currentUsername)await MyPrepAccount.saveState(state)}
 function toggleDetail(id){let el=document.getElementById("d-"+id.replaceAll("|","_").replaceAll(" ","_")); if(el)el.classList.toggle("show")}
 document.getElementById("subjectBtn").onclick=()=>menu.classList.toggle("open");
 document.getElementById("sort").onchange=render;document.getElementById("year").onchange=render;genre.onchange=render;
-document.getElementById("reset").onclick=async()=>{if(confirm("Reset all saved ticks?")){state={};render();if(currentUsername) await MyPrepAccount.saveState(state)}};
+document.getElementById("reset").onclick=async()=>{if(confirm("Reset all saved ticks?")){state={};render();if(currentUsername)await MyPrepAccount.saveState(state)}};
 renderMenu();populateGenre();render();
 
 async function startAccountUI(){
-  const gate=document.getElementById("accountGate"), app=document.getElementById("appContent");
-  const choice=document.getElementById("accountChoice"), signup=document.getElementById("signupForm"), login=document.getElementById("loginForm"), returning=document.getElementById("returning");
-  function openApp(){gate.hidden=true;app.hidden=false;render()}
-  function showOnly(el){choice.hidden=true;signup.hidden=true;login.hidden=true;returning.hidden=true;el.hidden=false}
-  const session=await MyPrepAccount.restoreSession();
-  if(session){ currentUsername=session.username; state=MyPrepAccount.objectFromIds(session.progress); document.getElementById("returningText").textContent=`Welcome back, ${session.username}. Your saved progress is ready.`; showOnly(returning); }
-  else { gate.hidden=false; app.hidden=true; }
-  document.getElementById("createAccountBtn").onclick=()=>{signup.hidden=false;choice.hidden=true};
-  document.getElementById("loginAccountBtn").onclick=()=>{login.hidden=false;choice.hidden=true};
-  document.getElementById("backFromSignup").onclick=()=>{signup.hidden=true;choice.hidden=false};
-  document.getElementById("backFromLogin").onclick=()=>{login.hidden=true;choice.hidden=false};
-  document.getElementById("continueBtn").onclick=openApp;
-  document.getElementById("differentBtn").onclick=()=>{returning.hidden=true;choice.hidden=false};
-  signup.onsubmit=async e=>{e.preventDefault();const m=document.getElementById("signupMessage");try{const old=Object.keys(state).filter(k=>state[k]);const r=await MyPrepAccount.signup(document.getElementById("signupUsername").value,document.getElementById("signupPin").value);currentUsername=r.username;state=MyPrepAccount.objectFromIds(r.progress||[]);if(old.length){state={};old.forEach(k=>state[k]=true);await MyPrepAccount.saveState(state);localStorage.removeItem("myprep_state")}openApp()}catch(err){m.textContent=err.message}};
-  login.onsubmit=async e=>{e.preventDefault();const m=document.getElementById("loginMessage");try{const r=await MyPrepAccount.login(document.getElementById("loginUsername").value,document.getElementById("loginPin").value);currentUsername=r.username;state=MyPrepAccount.objectFromIds(r.progress||[]);openApp()}catch(err){m.textContent=err.message}};
+const gate=document.getElementById("accountGate"),app=document.getElementById("appContent"),choice=document.getElementById("accountChoice"),signup=document.getElementById("signupForm"),login=document.getElementById("loginForm"),returning=document.getElementById("returning");
+function openApp(){gate.hidden=true;app.hidden=false;render()}
+function showChoice(){choice.hidden=false;signup.hidden=true;login.hidden=true;returning.hidden=true}
+const session=await MyPrepAccount.restoreSession();
+if(session){currentUsername=session.username;state=MyPrepAccount.objectFromIds(session.progress);document.getElementById("returningText").textContent=`Welcome back, ${session.username}. Your saved progress is ready.`;choice.hidden=true;returning.hidden=false}else{gate.hidden=false;app.hidden=true}
+createAccountBtn.onclick=()=>{choice.hidden=true;signup.hidden=false};loginAccountBtn.onclick=()=>{choice.hidden=true;login.hidden=false};backFromSignup.onclick=showChoice;backFromLogin.onclick=showChoice;continueBtn.onclick=openApp;differentBtn.onclick=showChoice;
+signup.onsubmit=async e=>{e.preventDefault();const m=document.getElementById("signupMessage");try{const old=Object.keys(state).filter(k=>state[k]);const r=await MyPrepAccount.signup(signupUsername.value,signupPin.value);currentUsername=r.username;state=MyPrepAccount.objectFromIds(r.progress||[]);if(old.length){state={};old.forEach(k=>state[k]=true);await MyPrepAccount.saveState(state);localStorage.removeItem("myprep_state")}openApp()}catch(err){m.textContent=err.message}};
+login.onsubmit=async e=>{e.preventDefault();const m=document.getElementById("loginMessage");try{const r=await MyPrepAccount.login(loginUsername.value,loginPin.value);currentUsername=r.username;state=MyPrepAccount.objectFromIds(r.progress||[]);openApp()}catch(err){m.textContent=err.message}};
 }
 startAccountUI();
 </script></div></body></html>
