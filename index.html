@@ -337,7 +337,7 @@ const gate=document.getElementById("accountGate"),app=document.getElementById("a
 function openApp(){gate.hidden=true;app.hidden=false;prepHome.hidden=false;prepChartView.hidden=true;prepoWidget.hidden=true;homePrepo.style.display="flex";renderStudyCards();render();if(!studies.length&&!Object.keys(state).length)setTimeout(showHomePrepo,650)}
 function showChoice(){choice.hidden=false;signup.hidden=true;login.hidden=true;returning.hidden=true;setPrepo(false)}
 const session=myprepRememberValid()?await MyPrepAccount.restoreSession():null;
-if(session){currentUsername=session.username;currentPin="";state=MyPrepAccount.objectFromIds(session.progress);studies=Array.isArray(session.studies)?session.studies:[];ensureLegacyStudy();markRemembered();choice.hidden=true;returning.hidden=true;openApp()}else{gate.hidden=false;app.hidden=true;choice.hidden=false;signup.hidden=true;login.hidden=true;returning.hidden=true}
+if(session){currentUsername=session.username;currentPin="";state=MyPrepAccount.objectFromIds(session.progress);studies=Array.isArray(session.studies)?session.studies:[];ensureLegacyStudy();myprepMarkRemembered();choice.hidden=true;returning.hidden=true;openApp()}else{gate.hidden=false;app.hidden=true;choice.hidden=false;signup.hidden=true;login.hidden=true;returning.hidden=true}
 createAccountBtn.onclick=()=>{choice.hidden=true;signup.hidden=false};loginAccountBtn.onclick=()=>{choice.hidden=true;login.hidden=false};backFromSignup.onclick=showChoice;backFromLogin.onclick=showChoice;continueBtn.onclick=openApp;differentBtn.onclick=showChoice;
 const prepoMascot=document.getElementById("prepoMascot");
 const setPrepo=(cover)=>{if(prepoMascot)prepoMascot.src=cover?prepoMascot.dataset.cover:prepoMascot.dataset.wave;};
