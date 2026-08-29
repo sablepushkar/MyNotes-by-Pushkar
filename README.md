@@ -1,25 +1,25 @@
-# MyPrep✓ ®
+# MyPrep
 
-A local, mobile-friendly NEET 2027 science syllabus tracker for Physics, Chemistry and Biology.
+MyPrep is a NEET 2027 preparation progress tracker.
 
-## Features
-- Subject menu: Physics / Chemistry / Biology
-- Class 11 / Class 12 filtering
-- Biology: Botany / Zoology metadata
-- Chemistry: Physical / Organic / Inorganic metadata
-- Three independent completion boxes per chapter
-- Completed boxes become white with a black tick; a fully completed chapter uses the green completion state
-- Chapter details expand/collapse
-- Sort by estimated difficulty or PYQ-trend priority/weightage
-- Progress is stored in the browser with localStorage
+## Account progress system
+- Unique username: 1–16 letters/numbers only.
+- 4-digit PIN, stored as a bcrypt hash.
+- Username uniqueness enforced by SQLite.
+- Progress is stored as a compact list of completed task keys.
+- Progress saves automatically when a tick is changed.
+- A server-side HttpOnly session lasts 7 days.
+- After expiry, username + PIN are required again.
 
-## Important data note
-Priority and difficulty are planning estimates informed by publicly available NEET PYQ/weightage analyses, not official NTA chapter-weightage declarations. NEET does not guarantee a fixed chapter-wise distribution. Re-check and update metadata when new papers/official syllabus information become available.
+## Run
+Requires Node.js 20+.
 
-Sources consulted:
-- Careers360 NEET chapter-wise weightage and 2025 analysis
-- Sartha 2021–2025 chapter-wise trend analysis
-- SATHEE IIT Kanpur NEET PYQ analysis
-- NTA NEET syllabus page
+```bash
+npm install
+npm start
+```
 
-The supplied chapter list is used as the project's syllabus dataset.
+The database is created automatically as `myprep.sqlite`. Do not commit that database file.
+
+## Deployment
+The frontend and `server.js` must run on a Node-capable host. A static-only GitHub Pages deployment cannot run the account API or enforce globally unique usernames.
