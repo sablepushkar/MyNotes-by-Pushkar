@@ -24,7 +24,10 @@ function databaseUrl(){
   // Render cannot reach Supabase direct IPv6 endpoints. If DATABASE_URL was
   // accidentally set to the direct db.* endpoint, transparently switch this
   // persistent backend to this project's IPv4 Supavisor session pooler.
-  if(u.hostname==="db.vokqobbqpjuwmyawbrdd.supabase.co") {
+  // Render is IPv4-only, so always route this Supabase project through
+  // its IPv4 Supavisor session pooler. This also protects against an old
+  // direct db.* URL remaining in Render's environment variables.
+  if(u.hostname.includes(".supabase.co") && !u.hostname.endsWith("pooler.supabase.com")) {
     u.hostname="aws-0-ap-southeast-1.pooler.supabase.com";
     u.port="5432";
     u.username="postgres.vokqobbqpjuwmyawbrdd";
