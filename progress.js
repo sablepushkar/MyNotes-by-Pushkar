@@ -7,7 +7,9 @@ window.MyPrepAccount=(()=>{
  async function signup(username,pin){return request("/api/signup",{method:"POST",body:JSON.stringify({username:String(username).trim(),pin:String(pin)})})}
  async function login(username,pin){return request("/api/login",{method:"POST",body:JSON.stringify({username:String(username).trim(),pin:String(pin)})})}
  async function restoreSession(){try{return await request("/api/session")}catch{return null}}
+ async function getStudies(){const d=await request("/api/studies");return Array.isArray(d.studies)?d.studies:[]}
+ async function saveStudies(studies){return request("/api/studies",{method:"PUT",body:JSON.stringify({studies:Array.isArray(studies)?studies:[]})})}
  async function saveState(state){return request("/api/progress",{method:"PUT",body:JSON.stringify({progress:idsFromObject(state)})})}
  async function logout(){return request("/api/logout",{method:"POST",body:"{}"})}
- return{signup,login,restoreSession,saveState,logout,objectFromIds,idsFromObject}
+ return{signup,login,restoreSession,saveState,getStudies,saveStudies,logout,objectFromIds,idsFromObject}
 })();
