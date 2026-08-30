@@ -156,6 +156,92 @@ body.dark-mode .study-card.exam-cbse .study-card-title,body.dark-mode .study-car
 @keyframes examInfoIn{from{opacity:0;transform:translateY(8px) scale(.985)}to{opacity:1;transform:none}}
 body,button,select,input,.study-modal,.settings-panel,.study-card,.menu,.study-type-menu{transition:background-color .22s ease,color .22s ease,border-color .22s ease,box-shadow .22s ease,opacity .22s ease}
 @media(max-width:700px){.study-cards{grid-template-columns:1fr;gap:11px}.study-card,.study-card.grid-half,.study-card.grid-full{grid-column:span 1}.study-card .study-card-actions{gap:6px}.study-card-access{padding:8px 9px}.exam-info-card{max-height:86vh}}
+
+/* MyPrep UI refinement v2: responsive hierarchy, consistent dark mode, focus states, and study-table ergonomics */
+:root{--focus-ring:0 0 0 3px rgba(90,120,255,.24)}
+*,*::before,*::after{box-sizing:border-box}
+button,select{min-height:40px}
+button{transition:background .16s ease,border-color .16s ease,transform .16s ease,box-shadow .16s ease}
+button:hover:not(:disabled){transform:translateY(-1px)}
+button:active:not(:disabled){transform:translateY(0)}
+button:focus-visible,select:focus-visible,[role="button"]:focus-visible{outline:none;box-shadow:var(--focus-ring);border-color:#6d83d8}
+header{min-height:64px;padding:12px 16px}
+header h1{letter-spacing:-.5px}
+#subjectBtn{font-weight:650}
+.toolbar{padding:2px 0 0;align-items:stretch}
+.toolbar select,.toolbar button{min-height:42px}
+.toolbar .stats{display:flex;align-items:center;padding:0 4px}
+.legend{margin:2px 0 12px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:color-mix(in srgb,var(--card) 92%,var(--bg));line-height:1.45}
+main{min-width:0}
+table{display:table;table-layout:fixed}
+thead th{position:sticky;top:64px;z-index:2;box-shadow:0 1px 0 var(--line)}
+th:first-child{width:52%}
+th:not(:first-child){width:16%}
+td:not(:first-child),th:not(:first-child){text-align:center}
+.chapter{display:block;overflow-wrap:anywhere}
+.check{margin:auto;transition:transform .12s ease,box-shadow .12s ease,border-color .12s ease}
+.check:hover{transform:scale(1.06);box-shadow:0 2px 8px rgba(0,0,0,.10)}
+.check:focus-visible{outline:none;box-shadow:var(--focus-ring)}
+.study-cards{grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch}
+.study-card{grid-column:span 2;min-width:0;max-width:none!important;padding:18px 20px;gap:14px;border-radius:16px;box-shadow:0 10px 28px rgba(0,0,0,.06)}
+.study-card.grid-half{grid-column:span 1}
+.study-card:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(0,0,0,.10)}
+.study-card-title{max-width:100%;overflow-wrap:anywhere}
+.study-card-meta{line-height:1.45}
+.study-card-actions{display:flex;align-items:center;gap:9px;margin-left:auto;flex-shrink:0}
+.study-card-info{width:30px!important;height:30px!important;min-height:30px;padding:0!important;border-radius:50%!important;display:grid;place-items:center}
+/* Every exam gets a consistent dark-mode black card with only its exam accent as the outline. */
+body.dark-mode .study-card{background:#000!important;color:#fff!important;border:1px solid var(--exam-accent,#8b8f98)!important;box-shadow:0 0 6px color-mix(in srgb,var(--exam-accent,#8b8f98) 55%,transparent),inset 0 0 10px color-mix(in srgb,var(--exam-accent,#8b8f98) 8%,transparent)!important}
+body.dark-mode .study-card.exam-neet{--exam-accent:#39ff88}
+body.dark-mode .study-card.exam-jee-main{--exam-accent:#ffe45c}
+body.dark-mode .study-card.exam-jee-advanced{--exam-accent:#ff9f43}
+body.dark-mode .study-card.exam-mht-cet{--exam-accent:#ff6b00}
+body.dark-mode .study-card.exam-bitsat{--exam-accent:#6ee7ff}
+body.dark-mode .study-card.exam-cuet-ug{--exam-accent:#b98cff}
+body.dark-mode .study-card.exam-iiser{--exam-accent:#8b8f98}
+body.dark-mode .study-card.exam-mpsc{--exam-accent:#e24b2f}
+body.dark-mode .study-card.exam-upsc{--exam-accent:#d4a017}
+body.dark-mode .study-card.exam-hsc{--exam-accent:#38bdf8}
+body.dark-mode .study-card.exam-cbse{--exam-accent:#5f86ff}
+body.dark-mode .study-card .study-card-title,body.dark-mode .study-card .study-card-meta,body.dark-mode .study-card .study-card-access,body.dark-mode .study-card .study-card-resize-tip{color:#fff!important}
+body.dark-mode .study-card-info{background:#111!important;color:#fff!important;border-color:#3a3a3a!important}
+body.dark-mode table{box-shadow:0 8px 28px rgba(0,0,0,.28)}
+body.dark-mode .legend{background:#0b0b0b}
+body.dark-mode .check{background:#0b0b0b;color:#fff;border-color:#8a8f98}
+body.dark-mode .check.all{background:var(--done);border-color:#39ff88}
+@media(max-width:700px){
+  header{padding:10px 10px;gap:8px}
+  header h1{font-size:19px}
+  .pill{font-size:10px;max-width:35vw;white-space:normal;text-align:right;line-height:1.2}
+  main{padding:12px 10px 42px;overflow-x:auto}
+  .toolbar{gap:8px}
+  .toolbar select,.toolbar button{flex:1 1 calc(50% - 4px);min-width:0}
+  .toolbar .stats{order:10;flex:1 1 100%;margin-left:0;min-height:32px}
+  .legend{font-size:11px;margin-bottom:10px}
+  table{min-width:680px}
+  thead th{top:59px}
+  th:first-child{width:46%}
+  th:not(:first-child){width:18%}
+  .study-cards{grid-template-columns:1fr}
+  .study-card,.study-card.grid-half{grid-column:span 1!important}
+  .study-card{padding:16px;min-height:112px!important}
+  .study-card-title{font-size:18px}
+  .study-card-meta{font-size:11px}
+  .study-card-access{display:none}
+  .study-card-actions{margin-left:auto}
+  .new-study-button{right:14px!important}
+}
+@media(max-width:430px){
+  .home-brand{left:12px;top:15px}
+  .home-brand-name{font-size:21px}
+  .home-brand-tagline{display:none}
+  .settings-button{right:10px;top:10px;width:40px;height:40px}
+  .settings-panel{right:10px;top:58px}
+  .toolbar select,.toolbar button{flex-basis:100%}
+  .study-card{padding:14px}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
 </style>
 </head><body>
 <div id="accountGate" class="account-gate">
